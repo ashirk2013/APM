@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { IProduct } from './product';
-import { Message } from '@angular/compiler/src/i18n/i18n_ast';
+import { ProductService } from './product.service';
 
 @Component({
     selector: 'pm-products',
@@ -12,10 +12,10 @@ export class ProductListComponent implements OnInit {
     imageWidth: number = 50;
     imageMargin: number = 2;
     showImage: boolean = false;
+    products: IProduct[] = [];
+    filteredProducts: IProduct[];
 
-    constructor() {
-        this.filteredProducts = this.products;
-        this.listFilter = 'cart';
+    constructor(private productService: ProductService) {
     }
     
     _listFilter: string;
@@ -27,29 +27,6 @@ export class ProductListComponent implements OnInit {
         this._listFilter = value;
         this.filteredProducts = this._listFilter ? this.performFilter(value): this.products;
     }
-
-    filteredProducts: IProduct[];
-    products: IProduct[] = [
-        {
-            "productId": 2,
-            "productName": "Garden Cart",
-            "productCode": "GDN-0023",
-            "releaseDate": "March 18, 2019",
-            "description": "15 gallon capacity rolling garden cart",
-            "price": 32.99, 
-            "starRating": 4.2,
-            "imageUrl": "assets/images/garden_cart.png",
-        },{
-            "productId": 5,
-            "productName": "Hammer",
-            "productCode": "TBX-0048",
-            "releaseDate": "May 21, 2019",
-            "description": "Curved claw steel hammer",
-            "price": 8.9, 
-            "starRating": 4.8,
-            "imageUrl": "assets/images/hammer.png",
-        }
-    ];
 
     performFilter(filterBy: string): IProduct[] {
         filterBy = filterBy.toLocaleLowerCase();
@@ -63,7 +40,8 @@ export class ProductListComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        console.log('In OnInit');
+        this.products = this.productService.getProducts();
+        this.filteredProducts = this.products;
     }
 
     onRatingClicked(message: string): void {
